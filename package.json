@@ -1,0 +1,31 @@
+{
+  "name": "seafoam-intake-engine",
+  "version": "1.0.0",
+  "description": "Lead intake and qualification service — receives, validates, deduplicates, enriches, and routes inbound form submissions.",
+  "author": "Seafoam Ops",
+  "license": "MIT",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "redis": "^4.6.14"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [
+    "seafoam",
+    "lead-intake",
+    "webhook",
+    "automation",
+    "express",
+    "redis"
+  ]
+}
