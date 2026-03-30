@@ -1,35 +1,58 @@
 'use strict';
 
+const { google } = require('googleapis');
 const env = require('../../config/env');
 
 /**
- * Google Sheets destination — scaffold.
+ * Appends one row per processed lead to a Google Sheet.
  *
- * TODO: Implement using the Google Sheets API v4.
+ * Columns (A–E): Name, Email, Source, Submitted At, Lead Score
  *
- * Recommended approach:
- *   1. Create a Google Cloud service account and share the target sheet with it.
- *   2. Use `googleapis` npm package to authenticate via a service account key.
- *   3. Use `sheets.spreadsheets.values.append` to add a new row per lead.
- *
- * Required env vars (to be added to .env.example when implemented):
- *   GOOGLE_SERVICE_ACCOUNT_EMAIL
- *   GOOGLE_PRIVATE_KEY
+ * Requires:
+ *   ENABLE_GOOGLE_SHEETS=true
  *   GOOGLE_SHEETS_SPREADSHEET_ID
- *   GOOGLE_SHEETS_RANGE  (e.g. "Leads!A:H")
- *
- * Column order suggestion: Lead ID, Name, Email, Source, Product, Region, Score, Submitted At
+ *   GOOGLE_SHEETS_SHEET_NAME        (default: "Leads")
+ *   GOOGLE_SERVICE_ACCOUNT_EMAIL
+ *   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY
  */
 async function sendToGoogleSheets(lead) {
   if (!env.enableGoogleSheets) {
     return { success: false, skipped: true, reason: 'Google Sheets integration is disabled' };
   }
 
-  // TODO: Replace this placeholder with a real implementation.
-  // The lead object is available here with all normalized and enriched fields.
-  void lead;
+  if (!env.googleSheetsSpreadsheetId || !env.googleServiceAccountEmail || !env.googleServiceAccountPrivateKey) {
+    return { success: false, skipped: true, reason: 'Google Sheets credentials are not configured' };
+  }
 
-  throw new Error('Google Sheets destination is not yet implemented. Set ENABLE_GOOGLE_SHEETS=false to suppress this.');
+  const auth = new google.auth.JWT({
+    email: env.googleServiceAccountEmail,
+    key: env.googleServiceAccountPrivateKey,
+    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+  });
+
+  const sheets = google.sheets({ version: 'v4', auth });
+
+  const range = `${env.googleSheetsSheetName}!A:E`;
+
+  const row = [
+    lead.name,
+    lead.email,
+    lead.source,
+    lead.submittedAt,
+    lead.leadScore,
+  ];
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: env.googleSheetsSpreadsheetId,
+    range,
+    valueInputOption: 'RAW',
+    insertDataOption: 'INSERT_ROWS',
+    requestBody: {
+      values: [row],
+    },
+  });
+
+  return { success: true };
 }
 
 module.exports = { sendToGoogleSheets };

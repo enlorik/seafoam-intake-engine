@@ -36,6 +36,10 @@ const env = {
   notionDatabaseId: process.env.NOTION_DATABASE_ID || '',
 
   enableGoogleSheets: boolEnv('ENABLE_GOOGLE_SHEETS'),
+  googleSheetsSpreadsheetId: process.env.GOOGLE_SHEETS_SPREADSHEET_ID || '',
+  googleSheetsSheetName: process.env.GOOGLE_SHEETS_SHEET_NAME || 'Leads',
+  googleServiceAccountEmail: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL || '',
+  googleServiceAccountPrivateKey: (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY || '').replace(/\\n/g, '\n'),
 };
 
 module.exports = env;
