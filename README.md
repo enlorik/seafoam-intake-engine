@@ -7,7 +7,52 @@ Lead intake and qualification service — receives, validates, deduplicates, enr
 ## Destinations
 
 ### Slack
-Set `ENABLE_SLACK=true` and provide `SLACK_WEBHOOK_URL`.
+
+#### 1. Create an incoming webhook
+1. Go to [api.slack.com/apps](https://api.slack.com/apps) and create a new app (or open an existing one).
+2. Under **Features** → **Incoming Webhooks**, toggle the feature on.
+3. Click **Add New Webhook to Workspace**, choose the target channel, and authorise.
+4. Copy the generated webhook URL (starts with `https://hooks.slack.com/services/…`).
+
+#### 2. Configure environment variables
+
+```env
+ENABLE_SLACK=true
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/SLACK/WEBHOOK
+```
+
+#### 3. Message format
+Each processed lead posts one message to the configured channel:
+
+```
+🌊 New Lead — <source>
+
+Name          Email
+<name>        <email>
+
+Source        Submitted At
+<source>      <submittedAt ISO-8601>
+
+Score         Lead ID
+<leadScore>   <uuid>
+```
+
+#### 4. Test locally
+```bash
+npm install
+npm run dev
+
+curl -X POST http://localhost:3000/leads \
+  -H "Content-Type: application/json" \
+  -d '{"name":"Test User","email":"test@example.com","source":"web"}'
+```
+
+A Slack message should arrive in your channel within seconds. The fanout result will include:
+```json
+"slack": { "success": true }
+```
+
+If the flag is off or the URL is missing, the destination returns `{ skipped: true }` — non-fatal, all other destinations still run.
 
 ### Airtable
 Set `ENABLE_AIRTABLE=true` and provide `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_NAME`.

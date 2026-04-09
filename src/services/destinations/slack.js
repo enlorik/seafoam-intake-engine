@@ -30,8 +30,8 @@ async function sendToSlack(lead) {
         fields: [
           { type: 'mrkdwn', text: `*Name*\n${lead.name}` },
           { type: 'mrkdwn', text: `*Email*\n${lead.email}` },
-          { type: 'mrkdwn', text: `*Product*\n${lead.intendedProduct || '—'}` },
-          { type: 'mrkdwn', text: `*Region*\n${lead.region || '—'}` },
+          { type: 'mrkdwn', text: `*Source*\n${lead.source}` },
+          { type: 'mrkdwn', text: `*Submitted At*\n${lead.submittedAt}` },
           { type: 'mrkdwn', text: `*Score*\n${lead.leadScore}` },
           { type: 'mrkdwn', text: `*Lead ID*\n${lead.id}` },
         ],
